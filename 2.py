@@ -32,12 +32,14 @@ while True:
 
         # Извлечение наличия (количество на складе)
         availability_elem = article.find('p', class_='instock availability')
-        availability_text = availability_elem.text.strip() if availability_elem else ''
-        qty_match = re.search(r'\d+', availability_text)
-        book_data['quantity'] = int(qty_match.group()) if qty_match else 0
+        availability_text = availability_elem.get_text(strip=True) if availability_elem else ''
+        if "In stock" in availability_text:
+            # Поскольку точное количество не указано, указываем как "In stock"
+            book_data['quantity'] = 'In stock'
+        else:
+            book_data['quantity'] = 0
 
-       
-        # Извлечение описания книги 
+        # Извлечение описания книги
         book_url = urllib.parse.urljoin(base_url, book_title['href']) if book_title else ''
         if book_url:
             book_response = requests.get(book_url)
@@ -47,10 +49,10 @@ while True:
         else:
             book_data['description'] = ''
 
-       # Добавляем данные книги в список
+        # Добавляем данные книги в список
         data.append(book_data)
 
-    # Проверяем ссылку на следующую страниц
+    # Проверяем ссылку на следующую страницу
     next_page = soup.find('li', class_='next')
     if next_page:
         url = urllib.parse.urljoin(base_url, next_page.find('a')['href'])
@@ -63,5 +65,4 @@ while True:
 with open('books_data.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=4)
 
-print(f'{len(data)} книг обработано и добавлена информация в books_data.json')
-
+print(f'{len(data)} книг обработано и добавлено в books_data.json')
