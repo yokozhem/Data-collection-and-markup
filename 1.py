@@ -16,6 +16,8 @@ https://docs.ozon.ru/api/seller/ https://developers.google.com/youtube/v3/gettin
 Скрипт должен вывести название и адрес и рейтинг каждого заведения в консоль.
 """
 
+
+
 import requests
 import json
 
